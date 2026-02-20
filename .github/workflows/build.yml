@@ -27,7 +27,7 @@ jobs:
 
       - name: Build Release (APK + AAB)
         run: |
-          ./gradlew clean assembleRelease bundleRelease
+          ./gradlew clean assembleDebug bundleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
