@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        imageView = findViewById(R.id.imageView)
+        imageView = findViewById(R.id.image)
         val selectButton: Button = findViewById(R.id.selectButton)
         val compressButton: Button = findViewById(R.id.compressButton)
 
