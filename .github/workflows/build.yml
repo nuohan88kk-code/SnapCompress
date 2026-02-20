@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: T1.0/TT1/SnapCompress
 
     steps:
     - uses: actions/checkout@v4
@@ -21,22 +24,7 @@ jobs:
         cache: 'gradle'
 
     - name: Make gradlew executable
-      run: chmod +x T1.0/TT1/SnapCompress/gradlew
+      run: chmod +x ./gradlew
 
     - name: Clean build
-      run: T1.0/TT1/SnapCompress/gradlew clean -p T1.0/TT1/SnapCompress
-
-    - name: Build with Gradle
-      run: T1.0/TT1/SnapCompress/gradlew assembleRelease bundleRelease -p T1.0/TT1/SnapCompress
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: release-apk
-        path: T1.0/TT1/SnapCompress/app/build/outputs/apk/release/*.apk
-
-    - name: Upload AAB
-      uses: actions/upload-artifact@v4
-      with:
-        name: release-aab
-        path: T1.0/TT1/SnapCompress/app/build/outputs/bundle/release/*.aab
+      run: ./gradlew clean
