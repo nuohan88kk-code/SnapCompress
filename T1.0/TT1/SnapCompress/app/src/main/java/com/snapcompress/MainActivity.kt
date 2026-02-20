@@ -73,15 +73,11 @@ class MainActivity : ComponentActivity() {
             registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
                 savedUri = null
                 if (uri != null) {
-context.contentResolver.openInputStream(uri).use { input ->
-    if (input != null) {
-        val bmp = BitmapFactory.decodeStream(input, null, BitmapFactory.Options())
-        bitmap = bmp
-        width = bmp?.width?.toFloat()?.coerceAtMost(2000f) ?: 1080f
-    }
-}
-                            }
-                        }
+                context.contentResolver.openInputStream(uri).use { input ->
+                    if (input != null) {
+                        val bmp = BitmapFactory.decodeStream(input, null, BitmapFactory.Options())
+                        bitmap = bmp
+                        width = bmp?.width?.toFloat()?.coerceAtMost(2000f) ?: 1080f
                     }
                 }
             }
