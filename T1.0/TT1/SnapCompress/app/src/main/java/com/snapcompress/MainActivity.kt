@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
             selectedImageUri?.let { uri ->
                 compressImage(uri)
             } ?: run {
-                Toast.makeText(this, "请先选择图片", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "请先选择图片", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -89,10 +89,10 @@ class MainActivity : AppCompatActivity() {
             compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
             outputStream.close()
 
-            Toast.makeText(this, "图片已压缩并保存到: ${file.absolutePath}", Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, "图片已压缩并保存到: ${file.absolutePath}", Toast.LENGTH_LONG).show()
         } catch (e: IOException) {
             e.printStackTrace()
-            Toast.makeText(this, "压缩失败", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "压缩失败", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             openGallery()
         } else {
-            Toast.makeText(this, "权限被拒绝", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "权限被拒绝", Toast.LENGTH_SHORT).show()
         }
     }
 }
