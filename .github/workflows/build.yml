@@ -1,4 +1,4 @@
-name: Android CI
+name: Android Sign & Build
 
 on:
   push:
@@ -7,59 +7,82 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      KEYSTORE_PATH: ${{ github.workspace }}/T1.0/TT1/SnapCompress/app/keystore.jks
+      SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+      SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+      SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+      SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+
     defaults:
       run:
         working-directory: T1.0/TT1/SnapCompress
 
     steps:
-      - name: Checkout
+      - name: 第1步 检出代码
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: 第2步 安装 JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
           cache: gradle
 
-      - name: Set up Android SDK
+      - name: 第3步 安装 Android SDK
         uses: android-actions/setup-android@v3
 
-      # 新增：从 Secrets 解码出密钥库文件
-      - name: Decode Keystore
-        run: echo ${{ secrets.SIGNING_KEYSTORE_BASE64 }} | base64 -d > app/keystore.jks
-        working-directory: T1.0/TT1/SnapCompress
-
-      - name: Make gradlew executable
+      - name: 第4步 赋予 gradlew 可执行权限
         run: chmod +x ./gradlew
 
-      - name: Clean
+      - name: 第5步 解码 Keystore（强校验）
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os, base64, re, sys, pathlib
+          b64 = os.environ.get("SIGNING_KEYSTORE_BASE64", "")
+          if not b64:
+              print("SIGNING_KEYSTORE_BASE64 为空", file=sys.stderr)
+              sys.exit(1)
+          clean = re.sub(r"\s+", "", b64)
+          try:
+              data = base64.b64decode(clean, validate=True)
+          except Exception as e:
+              print("Base64 解码失败: %s" % e, file=sys.stderr)
+              sys.exit(1)
+          path = os.environ["KEYSTORE_PATH"]
+          pathlib.Path(os.path.dirname(path)).mkdir(parents=True, exist_ok=True)
+          with open(path, "wb") as f:
+              f.write(data)
+          print("写入 keystore 字节数:", len(data))
+          PY
+
+      - name: 第6步 校验 Keystore（别名与口令）
+        if: success()
+        run: |
+          keytool -list -v -keystore "$KEYSTORE_PATH" \
+            -storepass "$SIGNING_STORE_PASSWORD" \
+            -alias "$SIGNING_KEY_ALIAS" \
+            -keypass "$SIGNING_KEY_PASSWORD"
+
+      - name: 第7步 清理
         run: ./gradlew --no-daemon clean
 
-      # 修改：构建时传入签名环境变量
-      - name: Assemble Release (APK)
+      - name: 第8步 构建 APK
         run: ./gradlew --no-daemon assembleRelease
-        env:
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
-      # 修改：构建时传入签名环境变量
-      - name: Bundle Release (AAB)
+      - name: 第9步 构建 AAB
         run: ./gradlew --no-daemon bundleRelease
-        env:
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
-      - name: Upload APK
+      - name: 第10步 上传 APK
         uses: actions/upload-artifact@v4
         with:
           name: app-apk
           path: T1.0/TT1/SnapCompress/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 
-      - name: Upload AAB
+      - name: 第11步 上传 AAB
         uses: actions/upload-artifact@v4
         with:
           name: app-aab
