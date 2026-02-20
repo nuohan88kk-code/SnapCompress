@@ -1,9 +1,7 @@
-name: Build Release (APK + AAB)
+name: Build Release APK
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
 jobs:
@@ -26,9 +24,6 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Clean build
-        run: ./gradlew clean
-
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
@@ -36,4 +31,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: T1.0/TT1/SnapCompress/app/build/outputs/apk/release/*.apk
+          path: app/build/outputs/apk/release/*.apk
