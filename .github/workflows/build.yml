@@ -1,31 +1,52 @@
-name: Build Release (APK + AAB)
+name: Android CI
+
 on:
   push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
+
 jobs:
   build:
-    runs-on: ubuntu-latest  # 明确使用 Ubuntu 环境
+    runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: T1.0/TT1/SnapCompress  # 严格匹配你的项目目录结构
+        working-directory: T1.0/TT1/SnapCompress
+
     steps:
-      - uses: actions/checkout@v4  # 第一步，完整拉取你的代码
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'gradle'  # 缓存依赖，避免网络问题
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Make gradlew executable
-        run: chmod +x ./gradlew  # 给 Gradle 脚本执行权限，这是 Linux 必须的
-      - name: Clean build
-        run: ./gradlew clean  # 清理构建缓存
-      - name: Build Release APK
-        run: ./gradlew assembleRelease  # 执行构建
+        run: chmod +x ./gradlew
+
+      - name: Clean
+        run: ./gradlew --no-daemon clean
+
+      - name: Assemble Release (APK)
+        run: ./gradlew --no-daemon assembleRelease
+
+      - name: Bundle Release (AAB)
+        run: ./gradlew --no-daemon bundleRelease
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: release-apk
-          path: T1.0/TT1/SnapCompress/app/build/outputs/apk/release/*.apk  # 明确 APK 输出路径
+          name: app-apk
+          path: T1.0/TT1/SnapCompress/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-aab
+          path: T1.0/TT1/SnapCompress/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
