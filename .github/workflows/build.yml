@@ -25,17 +25,32 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
+      # 新增：从 Secrets 解码出密钥库文件
+      - name: Decode Keystore
+        run: echo ${{ secrets.SIGNING_KEYSTORE_BASE64 }} | base64 -d > app/keystore.jks
+        working-directory: T1.0/TT1/SnapCompress
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
       - name: Clean
         run: ./gradlew --no-daemon clean
 
+      # 修改：构建时传入签名环境变量
       - name: Assemble Release (APK)
         run: ./gradlew --no-daemon assembleRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
+      # 修改：构建时传入签名环境变量
       - name: Bundle Release (AAB)
         run: ./gradlew --no-daemon bundleRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
