@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CACHE_DIR="${DIR}/.gradle-dist"
+GRADLE_VERSION="8.1.1"
+DIST_URL="https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"
+UNZIP_DIR="${CACHE_DIR}/gradle-${GRADLE_VERSION}"
+GRADLE_BIN="${UNZIP_DIR}/bin/gradle"
+
+mkdir -p "${CACHE_DIR}"
+
+if [[ ! -x "${GRADLE_BIN}" ]]; then
+  TMP_ZIP="${CACHE_DIR}/gradle-${GRADLE_VERSION}.zip"
+  echo "Downloading Gradle ${GRADLE_VERSION} ..."
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL -o "${TMP_ZIP}" "${DIST_URL}"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -q -O "${TMP_ZIP}" "${DIST_URL}"
+  else
+    echo "Error: curl or wget is required to download Gradle." >&2
+    exit 1
+  fi
+  rm -rf "${UNZIP_DIR}"
+  unzip -q "${TMP_ZIP}" -d "${CACHE_DIR}"
+fi
+
+exec "${GRADLE_BIN}" -p "${DIR}" "$@"
