@@ -18,10 +18,28 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-
-    - name: List root directory
-      run: ls -la
+        cache: 'gradle'
 
     - name: List project directory
       run: ls -la T1.0/TT1/SnapCompress
-      
+
+    - name: Make gradlew executable
+      run: chmod +x T1.0/TT1/SnapCompress/gradlew
+
+    - name: Clean build
+      run: T1.0/TT1/SnapCompress/gradlew clean -p T1.0/TT1/SnapCompress
+
+    - name: Build with Gradle
+      run: T1.0/TT1/SnapCompress/gradlew assembleRelease bundleRelease -p T1.0/TT1/SnapCompress
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-apk
+        path: T1.0/TT1/SnapCompress/app/build/outputs/apk/release/*.apk
+
+    - name: Upload AAB
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-aab
+        path: T1.0/TT1/SnapCompress/app/build/outputs/bundle/release/*.aab
