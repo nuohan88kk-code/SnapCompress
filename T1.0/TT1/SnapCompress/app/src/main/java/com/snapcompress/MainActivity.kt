@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
             selectedImageUri?.let { uri ->
                 compressImage(uri)
             } ?: run {
+                // 标准 Toast 调用，无歧义
                 Toast.makeText(applicationContext, "请先选择图片", Toast.LENGTH_SHORT).show()
             }
         }
@@ -85,13 +86,16 @@ class MainActivity : AppCompatActivity() {
                 getExternalFilesDir(Environment.DIRECTORY_PICTURES),
                 "compressed_${System.currentTimeMillis()}.jpg"
             )
+            // 明确使用 File 对象创建输出流，消除编译歧义
             val outputStream = FileOutputStream(file)
             compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
             outputStream.close()
 
+            // 标准 Toast 调用，无歧义
             Toast.makeText(applicationContext, "图片已压缩并保存到: ${file.absolutePath}", Toast.LENGTH_LONG).show()
         } catch (e: IOException) {
             e.printStackTrace()
+            // 标准 Toast 调用，无歧义
             Toast.makeText(applicationContext, "压缩失败", Toast.LENGTH_SHORT).show()
         }
     }
@@ -105,6 +109,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             openGallery()
         } else {
+            // 标准 Toast 调用，无歧义
             Toast.makeText(applicationContext, "权限被拒绝", Toast.LENGTH_SHORT).show()
         }
     }
