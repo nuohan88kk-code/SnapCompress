@@ -15,12 +15,10 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: gradle
-    - name: Go to project directory
-      run: cd T1.0/TT1/SnapCompress
     - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      run: cd T1.0/TT1/SnapCompress && chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew assembleRelease bundleRelease
+      run: cd T1.0/TT1/SnapCompress && ./gradlew assembleRelease bundleRelease
     - name: Upload AAB
       uses: actions/upload-artifact@v4
       with:
@@ -31,3 +29,4 @@ jobs:
       with:
         name: release-apk
         path: T1.0/TT1/SnapCompress/app/build/outputs/apk/release/app-release.apk
+        
