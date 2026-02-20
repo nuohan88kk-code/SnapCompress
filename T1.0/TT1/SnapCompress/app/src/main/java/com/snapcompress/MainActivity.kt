@@ -66,10 +66,10 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun App() {
         val context = LocalContext.current
-        var bitmap by remember<MutableState<Bitmap?>> { mutableStateOf(null) }
-        var quality by remember<MutableState<Float>> { mutableStateOf(80f) }
-        var width by remember<MutableState<Float>> { mutableStateOf(1080f) }
-        var savedUri by remember<MutableState<Uri?>> { mutableStateOf(null) }
+        var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+        var quality by remember { mutableStateOf(80f) }
+        var width by remember { mutableStateOf(1080f) }
+        var savedUri by remember { mutableStateOf<Uri?>(null) }
 
         val pickImage = remember {
             registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
