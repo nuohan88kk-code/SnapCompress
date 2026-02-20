@@ -38,6 +38,7 @@ import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     private var interstitialAd: InterstitialAd? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MobileAds.initialize(this)
@@ -65,23 +66,26 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun App() {
         val context = LocalContext.current
-        var bitmap by remember { mutableStateOf<Bitmap?>(null) }
-        var quality by remember { mutableStateOf(80f) }
-        var width by remember { mutableStateOf(1080f) }
-        var savedUri by remember { mutableStateOf<Uri?>(null) }
+        var bitmap by remember<MutableState<Bitmap?>> { mutableStateOf(null) }
+        var quality by remember<MutableState<Float>> { mutableStateOf(80f) }
+        var width by remember<MutableState<Float>> { mutableStateOf(1080f) }
+        var savedUri by remember<MutableState<Uri?>> { mutableStateOf(null) }
+
         val pickImage = remember {
             registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
                 savedUri = null
                 if (uri != null) {
-                context.contentResolver.openInputStream(uri).use { input ->
-                    if (input != null) {
-                        val bmp = BitmapFactory.decodeStream(input, null, BitmapFactory.Options())
-                        bitmap = bmp
-                        width = bmp?.width?.toFloat()?.coerceAtMost(2000f) ?: 1080f
+                    context.contentResolver.openInputStream(uri).use { input ->
+                        if (input != null) {
+                            val bmp = BitmapFactory.decodeStream(input, null, BitmapFactory.Options())
+                            bitmap = bmp
+                            width = bmp?.width?.toFloat()?.coerceAtMost(2000f) ?: 1080f
+                        }
                     }
                 }
             }
         }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
