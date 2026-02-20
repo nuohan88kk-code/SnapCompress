@@ -15,22 +15,30 @@ android {
         versionName '1.0'
     }
 
-    // 👇 下面这一整块是我给你新加的签名配置，别的完全没动
+    def ksPath = System.getenv("KEYSTORE_PATH")
+    def storePwd = System.getenv("SIGNING_STORE_PASSWORD")
+    def keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+    def keyPwd = System.getenv("SIGNING_KEY_PASSWORD")
+
     signingConfigs {
         release {
-            storeFile file("keystore.jks")
-            storePassword System.getenv("SIGNING_STORE_PASSWORD")
-            keyAlias System.getenv("SIGNING_KEY_ALIAS")
-            keyPassword System.getenv("SIGNING_KEY_PASSWORD")
+            if (ksPath && storePwd && keyAlias && keyPwd && file(ksPath).exists()) {
+                storeFile file(ksPath)
+                storePassword storePwd
+                keyAlias keyAlias
+                keyPassword keyPwd
+                v1SigningEnabled true
+                v2SigningEnabled true
+            } else {
+                throw new GradleException("签名参数缺失或 keystore 不存在，请检查环境变量与文件路径")
+            }
         }
     }
-    // 👆 新加结束
 
     buildTypes {
         release {
-            // 👇 这里只加了一行签名
-            signingConfig signingConfigs.release
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
