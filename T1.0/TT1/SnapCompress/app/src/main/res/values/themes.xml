@@ -1,5 +1,7 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.SnapCompress" parent="Theme.Material3.Light.NoActionBar">
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorSurface</item>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/teal_200</item>
+        <item name="colorPrimaryDark">@color/teal_700</item>
+        <item name="colorAccent">@color/purple_200</item>
     </style>
 </resources>
