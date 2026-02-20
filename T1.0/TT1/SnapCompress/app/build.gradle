@@ -15,18 +15,18 @@ android {
         versionName '1.0'
     }
 
-    def ksPath = System.getenv("KEYSTORE_PATH")
-    def storePwd = System.getenv("SIGNING_STORE_PASSWORD")
-    def keyAlias = System.getenv("SIGNING_KEY_ALIAS")
-    def keyPwd = System.getenv("SIGNING_KEY_PASSWORD")
+    def keystorePathEnv = System.getenv("KEYSTORE_PATH")
+    def storePassEnv = System.getenv("SIGNING_STORE_PASSWORD")
+    def keyAliasEnv = System.getenv("SIGNING_KEY_ALIAS")
+    def keyPassEnv = System.getenv("SIGNING_KEY_PASSWORD")
 
     signingConfigs {
         release {
-            if (ksPath && storePwd && keyAlias && keyPwd && file(ksPath).exists()) {
-                storeFile file(ksPath)
-                storePassword storePwd
-                keyAlias keyAlias
-                keyPassword keyPwd
+            if (keystorePathEnv && storePassEnv && keyAliasEnv && keyPassEnv && file(keystorePathEnv).exists()) {
+                storeFile file(keystorePathEnv)
+                storePassword storePassEnv
+                keyAlias keyAliasEnv
+                keyPassword keyPassEnv
                 v1SigningEnabled true
                 v2SigningEnabled true
             } else {
