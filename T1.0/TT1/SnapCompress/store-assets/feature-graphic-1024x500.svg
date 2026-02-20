@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00E5A8"/>
+      <stop offset="1" stop-color="#00B389"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="500" fill="#121212"/>
+  <g transform="translate(150,70)">
+    <circle cx="100" cy="100" r="100" fill="url(#g)"/>
+    <circle cx="100" cy="100" r="45" fill="#121212"/>
+    <circle cx="100" cy="100" r="18" fill="#00E5A8"/>
+  </g>
+  <text x="360" y="180" font-size="64" fill="#FFFFFF" font-family="Arial" font-weight="700">SnapCompress</text>
+  <text x="360" y="240" font-size="28" fill="#B0F5E6" font-family="Arial">Reduce photo size quickly. Keep quality. Share instantly.</text>
+</svg>

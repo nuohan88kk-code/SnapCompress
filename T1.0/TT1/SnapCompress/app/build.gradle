@@ -1,0 +1,67 @@
+apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
+
+android {
+    namespace "com.snapcompress"
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.snapcompress"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    def keystoreFile = System.getenv("SIGNING_STORE_FILE")
+    def keystorePassword = System.getenv("SIGNING_STORE_PASSWORD")
+    def keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+    def keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+
+    if (keystoreFile && keystorePassword && keyAlias && keyPassword) {
+        signingConfigs {
+            release {
+                storeFile file(keystoreFile)
+                storePassword keystorePassword
+                keyAlias keyAlias
+                keyPassword keyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            if (keystoreFile && keystorePassword && keyAlias && keyPassword) {
+                signingConfig signingConfigs.release
+            }
+        }
+        debug {
+            debuggable true
+        }
+    }
+
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion "1.5.3"
+    }
+    packagingOptions {
+        resources {
+            excludes += ["/META-INF/{AL2.0,LGPL2.1}"]
+        }
+    }
+}
+
+dependencies {
+    implementation platform("androidx.compose:compose-bom:2023.10.01")
+    implementation "androidx.compose.ui:ui"
+    implementation "androidx.compose.ui:ui-tooling-preview"
+    debugImplementation "androidx.compose.ui:ui-tooling"
+    implementation "androidx.compose.material3:material3:1.1.2"
+    implementation "androidx.activity:activity-compose:1.8.2"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2"
+    implementation "com.google.android.gms:play-services-ads:22.6.0"
+}
