@@ -70,7 +70,7 @@ jobs:
         run: ./gradlew --no-daemon clean
 
       - name: 第8步 构建 APK
-        run: ./gradlew --no-daemon assembleRelease
+        run: ./gradlew --no-daemon --stacktrace --info -Pkotlin.compiler.execution.strategy=in-process assembleRelease
 
       - name: 第9步 构建 AAB
         run: ./gradlew --no-daemon bundleRelease
