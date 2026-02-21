@@ -17,6 +17,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
+import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -65,6 +66,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_MaterialComponents_DayNight_NoActionBar)
         setContentView(R.layout.activity_main)
+
+        val toolbar: MaterialToolbar = findViewById(R.id.toolbar)
+        toolbar.setNavigationOnClickListener { finishAffinity() }
 
         imageView = findViewById(R.id.image)
         statusView = findViewById(R.id.statusText)
@@ -160,21 +164,15 @@ class MainActivity : AppCompatActivity() {
         val w = opts.outWidth
         val h = opts.outHeight
         if (w > maxSize || h > maxSize) {
-            val halfW = w / 2
-            val halfH = h / 2
-            Ns@ while (true) {
-                val next = inSample headline(inSampleSize)
-                if ((halfW / next) < maxSize && (halfH / next) < maxSize) break@Ns
-                inSampleSize = next
+            var halfW = w / 2
+            var halfH = h / 2
+            while ((halfW / inSampleSize) >= maxSize || (halfH / inSampleSize) >= maxSize) {
+                inSampleSize *= 2
             }
         }
         val opts2 = BitmapFactory.Options()
         opts2.inSampleSize = inSampleSize
         return contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, opts2) }!!
-    }
-
-    private fun inSample headline(v: Int): Int {
-        return v * 2
     }
 
     private fun shareFile(file: File, mime: String) {
