@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.snapcompress'
+    namespace 'com.snapcompress'
     compileSdk 34
 
     defaultConfig {
-        applicationId 'com.example.snapcompress'
+        applicationId 'com.snapcompress'
         minSdk 21
         targetSdk 34
         versionCode 1
@@ -64,7 +64,6 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.7.2'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation 'com.google.android.gms:play-services-ads:22.6.0'
 }
