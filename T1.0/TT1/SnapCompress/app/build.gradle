@@ -13,6 +13,7 @@ android {
         targetSdk 34
         versionCode 1
         versionName '1.0'
+        vectorDrawables.useSupportLibrary = true
     }
 
     lint {
@@ -20,18 +21,18 @@ android {
         checkReleaseBuilds false
     }
 
-    def keystorePathEnv = System.getenv("KEYSTORE_PATH")
-    def storePassEnv = System.getenv("SIGNING_STORE_PASSWORD")
-    def keyAliasEnv = System.getenv("SIGNING_KEY_ALIAS")
-    def keyPassEnv = System.getenv("SIGNING_KEY_PASSWORD")
+    def ks = System.getenv("KEYSTORE_PATH")
+    def sp = System.getenv("SIGNING_STORE_PASSWORD")
+    def ka = System.getenv("SIGNING_KEY_ALIAS")
+    def kp = System.getenv("SIGNING_KEY_PASSWORD")
 
     signingConfigs {
         release {
-            if (keystorePathEnv && storePassEnv && keyAliasEnv && keyPassEnv && file(keystorePathEnv).exists()) {
-                storeFile file(keystorePathEnv)
-                storePassword storePassEnv
-                keyAlias keyAliasEnv
-                keyPassword keyPassEnv
+            if (ks && sp && ka && kp && file(ks).exists()) {
+                storeFile file(ks)
+                storePassword sp
+                keyAlias ka
+                keyPassword kp
                 v1SigningEnabled true
                 v2SigningEnabled true
             } else {
@@ -58,12 +59,13 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
+}
 
-    sourceSets {
-        release {
-            java.srcDirs = ['src/release/java']
-            res.srcDirs = ['src/release/res']
-        }
+configurations.all {
+    resolutionStrategy {
+        force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.24'
+        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24'
+        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.24'
     }
 }
 
