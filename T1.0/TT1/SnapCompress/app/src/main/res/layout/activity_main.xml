@@ -1,14 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F172A">
+    android:background="#0B0F15">
 
-    <TextView
-        android:layout_gravity="center"
-        android:text="Release 构建通过（已签名）"
-        android:textColor="#E2E8F0"
-        android:textSize="18sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-</FrameLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="图片压缩 · PDF 合成"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#F5D77F"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:layout_marginTop="12dp"
+            android:background="#131A24" />
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="请选择图片"
+            android:textColor="#A0AEC0"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/selectButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="选择图片"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="#F5D NB"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/compressButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="压缩并保存"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#F5D77F"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/multiToPdfButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="多选合成 PDF"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#F5D77F"
+            android:textColor="@android:color/black" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <Button
+                android:id="@+id/shareImageButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="分享图片"
+                android:backgroundTint="#1E90FF"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/sharePdfButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="分享 PDF"
+                android:backgroundTint="#1E90FF"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
