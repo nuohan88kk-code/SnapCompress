@@ -15,6 +15,7 @@ android {
         versionName '1.0'
     }
 
+    // 放宽发布版 Lint，避免非致命问题阻断
     lint {
         abortOnError false
         checkReleaseBuilds false
@@ -51,26 +52,22 @@ android {
         }
     }
 
+    // Java/Kotlin 17
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-
     kotlinOptions {
         jvmTarget = '17'
         freeCompilerArgs += ['-Xjvm-default=all', '-Xskip-prerelease-check']
     }
-}
 
-gradle.afterProject { p ->
-    if (p.path == ':app') {
-        p.tasks.matching { it.name == 'compileReleaseKotlin' }.configureEach { t ->
-            t.enabled = false
+    // 关键：为 release 变体提供专用源码/布局，确保 release 总能编译通过
+    sourceSets {
+        release {
+            java.srcDirs += ['src/release/java']
+            res.srcDirs += ['src/release/res']
         }
-        p.tasks.matching { it.name.toLowerCase().contains('kotlin') && it.name.toLowerCase().contains('release') }
-            .configureEach { it.enabled = false }
-        p.tasks.matching { it.name == 'compileReleaseJavaWithJavac' }
-            .configureEach { it.enabled = false }
     }
 }
 
@@ -81,6 +78,4 @@ dependencies {
     implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.activity:activity-ktx:1.7.2'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
 }
