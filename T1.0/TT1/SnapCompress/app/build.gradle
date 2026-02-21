@@ -15,7 +15,6 @@ android {
         versionName '1.0'
     }
 
-    // 放宽发布版 Lint，避免非致命问题阻断
     lint {
         abortOnError false
         checkReleaseBuilds false
@@ -52,21 +51,18 @@ android {
         }
     }
 
-    // Java/Kotlin 17
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
         jvmTarget = '17'
-        freeCompilerArgs += ['-Xjvm-default=all', '-Xskip-prerelease-check']
     }
 
-    // 关键：为 release 变体提供专用源码/布局，确保 release 总能编译通过
     sourceSets {
         release {
-            java.srcDirs += ['src/release/java']
-            res.srcDirs += ['src/release/res']
+            java.srcDirs = ['src/release/java']
+            res.srcDirs = ['src/release/res']
         }
     }
 }
