@@ -1,5 +1,6 @@
 package com.snapcompress
 
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.ImageView
@@ -24,8 +25,8 @@ class ResultActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun intent(ctx: android.content.Context, path: String): android.content.Intent {
-            val i = android.content.Intent(ctx, ResultActivity::class.java)
+        fun intent(ctx: android.content.Context, path: String): Intent {
+            val i = Intent(ctx, ResultActivity::class.java)
             i.putExtra("path", path)
             return i
         }
