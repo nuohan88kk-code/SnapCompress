@@ -65,7 +65,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.Theme_MaterialComponents_DayNight_NoActionBar)
         setContentView(R.layout.activity_main)
 
         val toolbar: MaterialToolbar = findViewById(R.id.toolbar)
