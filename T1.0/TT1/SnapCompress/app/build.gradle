@@ -29,8 +29,6 @@ android {
                 keyPassword keyPassEnv
                 v1SigningEnabled true
                 v2SigningEnabled true
-            } else {
-                throw new GradleException("签名参数缺失或 keystore 不存在，请检查环境变量与文件路径")
             }
         }
     }
@@ -38,7 +36,9 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            signingConfig signingConfigs.release
+            if (keystorePathEnv && file(keystorePathEnv).exists()) {
+                signingConfig signingConfigs.release
+            }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -65,5 +65,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation 'com.google.android.gms:play-services-ads:22.6.0'
 }
