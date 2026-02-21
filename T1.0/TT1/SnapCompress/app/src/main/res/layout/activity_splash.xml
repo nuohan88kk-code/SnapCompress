@@ -4,23 +4,11 @@
     android:layout_height="match_parent"
     android:background="#1E3A8A">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ImageView
-            android:src="@mipmap/ic_launcher"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_marginBottom="16dp" />
-
-        <TextView
-            android:text="SnapCompress"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+    <TextView
+        android:layout_gravity="center"
+        android:text="SnapCompress Release"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 </FrameLayout>
