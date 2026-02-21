@@ -1,4 +1,4 @@
-package com.example.snapcompress
+package com.snapcompress
 
 import android.os.Bundle
 import android.widget.TextView
