@@ -15,9 +15,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.MobileAds
-import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -67,9 +64,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val toolbar: MaterialToolbar = findViewById(R.id.toolbar)
-        toolbar.setNavigationOnClickListener { finishAffinity() }
-
         imageView = findViewById(R.id.image)
         statusView = findViewById(R.id.statusText)
         selectButton = findViewById(R.id.selectButton)
@@ -81,11 +75,6 @@ class MainActivity : AppCompatActivity() {
         compressButton.isEnabled = false
         shareImageButton.isEnabled = false
         sharePdfButton.isEnabled = false
-
-        MobileAds.initialize(this)
-        val adRequest = AdRequest.Builder().build()
-        val adView: com.google.android.gms.ads.AdView = findViewById(R.id.adView)
-        adView.loadAd(adRequest)
 
         selectButton.setOnClickListener { pickSingle.launch("image/*") }
 
