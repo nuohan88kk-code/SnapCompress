@@ -1,5 +1,6 @@
 package com.snapcompress
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -20,8 +21,8 @@ class PdfResultActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun intent(ctx: android.content.Context, path: String): android.content.Intent {
-            val i = android.content.Intent(ctx, PdfResultActivity::class.java)
+        fun intent(ctx: android.content.Context, path: String): Intent {
+            val i = Intent(ctx, PdfResultActivity::class.java)
             i.putExtra("path", path)
             return i
         }
