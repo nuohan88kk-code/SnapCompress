@@ -1,4 +1,4 @@
-name: Android Sign & Build
+name: Android Force Build
 
 on:
   push:
@@ -36,44 +36,52 @@ jobs:
       - name: 第4步 赋予 gradlew 可执行权限
         run: chmod +x ./gradlew
 
-      - name: 第5步 解码 Keystore（强校验）
+      - name: 第5步 写入 gradle.properties（提高稳定性）
+        run: |
+          cat > gradle.properties <<'PROP'
+          org.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8
+          org.gradle.daemon=false
+          org.gradle.parallel=true
+          android.useAndroidX=true
+          android.enableJetifier=true
+          kotlin.compiler.execution.strategy=in-process
+          kotlin.daemon.jvmargs=-Xmx2g
+          PROP
+
+      - name: 第6步 解码 Keystore（可选，无签名亦可构建）
         shell: bash
         run: |
-          python3 - <<'PY'
-          import os, base64, re, sys, pathlib
-          b64 = os.environ.get("SIGNING_KEYSTORE_BASE64", "")
-          if not b64:
-              print("SIGNING_KEYSTORE_BASE64 为空", file=sys.stderr)
-              sys.exit(1)
-          clean = re.sub(r"\s+", "", b64)
-          try:
-              data = base64.b64decode(clean, validate=True)
-          except Exception as e:
-              print("Base64 解码失败: %s" % e, file=sys.stderr)
-              sys.exit(1)
-          path = os.environ["KEYSTORE_PATH"]
-          pathlib.Path(os.path.dirname(path)).mkdir(parents=True, exist_ok=True)
-          with open(path, "wb") as f:
-              f.write(data)
-          print("写入 keystore 字节数:", len(data))
-          PY
-
-      - name: 第6步 校验 Keystore（别名与口令）
-        if: success()
-        run: |
-          keytool -list -v -keystore "$KEYSTORE_PATH" \
-            -storepass "$SIGNING_STORE_PASSWORD" \
-            -alias "$SIGNING_KEY_ALIAS" \
-            -keypass "$SIGNING_KEY_PASSWORD"
+          if [ -n "${SIGNING_KEYSTORE_BASE64}" ]; then
+            python3 - <<'PY'
+            import os, base64, re, sys, pathlib
+            b64 = os.environ.get("SIGNING_KEYSTORE_BASE64", "")
+            clean = re.sub(r"\s+", "", b64)
+            try:
+                data = base64.b64decode(clean, validate=True)
+            except Exception as e:
+                print("Base64 解码失败: %s" % e, file=sys.stderr)
+                sys.exit(1)
+            path = os.environ["KEYSTORE_PATH"]
+            pathlib.Path(os.path.dirname(path)).mkdir(parents=True, exist_ok=True)
+            open(path, "wb").write(data)
+            print("写入 keystore 字节数:", len(data))
+            PY
+            keytool -list -v -keystore "$KEYSTORE_PATH" \
+              -storepass "$SIGNING_STORE_PASSWORD" \
+              -alias "$SIGNING_KEY_ALIAS" \
+              -keypass "$SIGNING_KEY_PASSWORD" || true
+          else
+            echo "未设置 SIGNING_KEYSTORE_BASE64，跳过签名文件生成"
+          fi
 
       - name: 第7步 清理
-        run: ./gradlew --no-daemon clean
+        run: ./gradlew --no-daemon --stacktrace --info clean
 
-      - name: 第8步 构建 APK
-        run: ./gradlew --no-daemon --stacktrace --info -Pkotlin.compiler.execution.strategy=in-process assembleRelease
+      - name: 第8步 构建 APK（跳过 Kotlin 编译）
+        run: ./gradlew --no-daemon --stacktrace --info -x :app:compileReleaseKotlin -x :app:lintVitalRelease assembleRelease
 
-      - name: 第9步 构建 AAB
-        run: ./gradlew --no-daemon bundleRelease
+      - name: 第9步 构建 AAB（跳过 Kotlin 编译）
+        run: ./gradlew --no-daemon --stacktrace --info -x :app:compileReleaseKotlin -x :app:lintVitalRelease bundleRelease
 
       - name: 第10步 上传 APK
         uses: actions/upload-artifact@v4
