@@ -1,4 +1,4 @@
-name: Android Signed Build
+name: Android Signed Release
 
 on:
   push:
@@ -56,40 +56,39 @@ jobs:
           import os, re, base64, sys, pathlib
           b64 = os.environ.get("SIGNING_KEYSTORE_BASE64", "")
           if not b64.strip():
-              print("SIGNING_KEYSTORE_BASE64 为空", file=sys.stderr)
-              sys.exit(2)
+              print("SIGNING_KEYSTORE_BASE64 为空", file=sys.stderr); sys.exit(2)
           clean = re.sub(r'[^A-Za-z0-9+/=]', '', b64)
           pad = (-len(clean)) % 4
           clean = clean + ("=" * pad)
           try:
               data = base64.b64decode(clean)
           except Exception as e:
-              print("Base64 解码失败: %s" % e, file=sys.stderr)
-              sys.exit(2)
+              print("Base64 解码失败: %s" % e, file=sys.stderr); sys.exit(2)
           path = os.environ["KEYSTORE_PATH"]
           pathlib.Path(os.path.dirname(path)).mkdir(parents=True, exist_ok=True)
-          with open(path, "wb") as f:
-              f.write(data)
-          if os.path.getsize(path) < 1000:
-              print("keystore 大小异常", file=sys.stderr)
-              sys.exit(2)
+          open(path, "wb").write(data)
+          if os.path.getsize(path) < 1024:
+              print("keystore 大小异常", file=sys.stderr); sys.exit(2)
           PY
           keytool -list -v -keystore "$KEYSTORE_PATH" \
             -storepass "$SIGNING_STORE_PASSWORD" \
             -alias "$SIGNING_KEY_ALIAS" \
-            -keypass "$SIGNING_KEY_PASSWORD" \
-            | head -n 5
+            -keypass "$SIGNING_KEY_PASSWORD" | head -n 5
 
       - name: 第7步 清理
+        if: ${{ success() }}
         run: ./gradlew --no-daemon --stacktrace --info clean
 
-      - name: 第8步 构建 APK（带签名，跳过 Kotlin 编译和发布 Lint）
-        run: ./gradlew --no-daemon --stacktrace --info -x :app:compileReleaseKotlin -x :app:lintVitalRelease assembleRelease
+      - name: 第8步 构建 APK（Release 签名）
+        if: ${{ success() }}
+        run: ./gradlew --no-daemon --stacktrace --info assembleRelease
 
-      - name: 第9步 构建 AAB（带签名，跳过 Kotlin 编译和发布 Lint）
-        run: ./gradlew --no-daemon --stacktrace --info -x :app:compileReleaseKotlin -x :app:lintVitalRelease bundleRelease
+      - name: 第9步 构建 AAB（Release 签名）
+        if: ${{ success() }}
+        run: ./gradlew --no-daemon --stacktrace --info bundleRelease
 
       - name: 第10步 上传 APK
+        if: ${{ success() }}
         uses: actions/upload-artifact@v4
         with:
           name: app-apk
@@ -97,6 +96,7 @@ jobs:
           if-no-files-found: error
 
       - name: 第11步 上传 AAB
+        if: ${{ success() }}
         uses: actions/upload-artifact@v4
         with:
           name: app-aab
