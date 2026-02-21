@@ -4,13 +4,13 @@
     android:padding="16dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/surface_bg">
+    android:background="#0F172A">
 
     <TextView
         android:text="压缩结果"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="@color/primary_text"
+        android:textColor="#E2E8F0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -22,7 +22,7 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:layout_marginTop="12dp"
-        android:background="@drawable/panel_card" />
+        android:background="#1F2937" />
 
     <TextView
         android:id="@+id/resultInfo"
@@ -30,5 +30,5 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="信息"
-        android:textColor="@color/secondary_text" />
+        android:textColor="#94A3B8" />
 </LinearLayout>
