@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,95 +8,111 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="0dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:text="图片压缩与PDF合成"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary_text"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/panel_card" />
-
-        <TextView
-            android:id="@+id/statusText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="请选择图片"
-            android:textColor="@color/secondary_text"
-            android:layout_marginTop="8dp" />
-
-        <Button
-            android:id="@+id/selectButton"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="选择照片"
-            android:layout_marginTop="12dp"
-            android:backgroundTint="@color/primary"
-            android:textColor="@android:color/white" />
-
-        <Button
-            android:id="@+id/compressButton"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="压缩并保存"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@color/primary"
-            android:textColor="@android:color/white" />
-
-        <Button
-            android:id="@+id/multiToPdfButton"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="多选并合并为PDF"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@color/primary"
-            android:textColor="@android:color/white" />
+            android:layout_height="56dp"
+            android:background="@color/primary"
+            android:title="SnapCompress | 图片压缩"
+            android:titleTextColor="@android:color/white"
+            app:navigationIcon="@drawable/ic_arrow_back_24" />
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
+            android:padding="16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_height="match_parent">
+
+            <TextView
+                android:text="图片压缩与PDF合成 / Image Compress & PDF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/panel_card" />
+
+            <TextView
+                android:id="@+id/statusText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="请选择图片 / Select an image"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="8dp" />
 
             <Button
-                android:id="@+id/shareImageButton"
-                android:layout_width="0dp"
+                android:id="@+id/selectButton"
+                android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:layout_weight="1"
-                android:text="分享图片"
-                android:backgroundTint="@color/secondary"
+                android:text="选择照片 / Select"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="@color/primary"
                 android:textColor="@android:color/white" />
 
             <Button
-                android:id="@+id/sharePdfButton"
-                android:layout_width="0dp"
+                android:id="@+id/compressButton"
+                android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:text="分享PDF"
-                android:backgroundTint="@color/secondary"
+                android:text="压缩并保存 / Compress"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/primary"
                 android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/multiToPdfButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="多选合并PDF / To PDF"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/primary"
+                android:textColor="@android:color/white" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <Button
+                    android:id="@+id/shareImageButton"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="分享图片 / Share JPG"
+                    android:backgroundTint="@color/secondary"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/sharePdfButton"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="分享PDF / Share PDF"
+                    android:backgroundTint="@color/secondary"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/adView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                ads:adSize="BANNER"
+                ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+                android:layout_marginTop="12dp" />
         </LinearLayout>
-
-        <com.google.android.gms.ads.AdView
-            android:id="@+id/adView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
-            android:layout_marginTop="12dp" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
