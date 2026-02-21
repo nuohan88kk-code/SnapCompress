@@ -28,7 +28,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:text="图片压缩与PDF合成 / Image Compress & PDF"
+                android:text="图片压缩与PDF合成 / Image Compress &amp; PDF"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/primary_text"
