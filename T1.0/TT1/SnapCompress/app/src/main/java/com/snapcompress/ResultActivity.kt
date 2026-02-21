@@ -1,4 +1,4 @@
-package com.example.snapcompress
+package com.snapcompress
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
