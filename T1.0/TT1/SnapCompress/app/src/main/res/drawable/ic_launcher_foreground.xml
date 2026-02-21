@@ -4,22 +4,18 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-
     <path
         android:fillColor="#FFFFFF"
         android:fillAlpha="0.22"
         android:pathData="M8,20 L100,20 L100,88 L8,88 Z"/>
-
     <path
         android:fillColor="#FFFFFF"
         android:fillAlpha="0.85"
         android:pathData="M12,30 L52,30 L52,78 L12,78 Z"/>
-
     <path
         android:fillColor="#FFFFFF"
         android:fillAlpha="0.85"
         android:pathData="M56,30 L96,30 L96,78 L56,78 Z"/>
-
     <path
         android:fillColor="#1E3A8A"
         android:pathData="M18,36 L22,36 L22,72 L18,72 Z"/>
@@ -32,11 +28,9 @@
     <path
         android:fillColor="#1E3A8A"
         android:pathData="M22,68 L40,68 L40,72 L22,72 Z"/>
-
     <path
         android:fillColor="#1E3A8A"
         android:pathData="M44,72 L44,36 L48,36 L48,60 L60,36 L64,36 L64,72 L60,72 L60,48 L48,72 Z"/>
-
     <path
         android:fillColor="#1E3A8A"
         android:pathData="M64,34 L88,34 L88,38 L64,38 Z"/>
