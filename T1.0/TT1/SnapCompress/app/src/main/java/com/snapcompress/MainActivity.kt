@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var multiToPdfButton: Button
     private lateinit var shareImageButton: Button
     private lateinit var sharePdfButton: Button
+
     private var selectedUri: Uri? = null
     private var lastImageFile: File? = null
     private var lastPdfFile: File? = null
@@ -139,8 +140,8 @@ class MainActivity : AppCompatActivity() {
             val scale = minOf(pageWidth.toFloat() / bmp.width, pageHeight.toFloat() / bmp.height)
             val drawW = (bmp.width * scale).toInt()
             val drawH = (bmp.height * scale).toInt()
-            val left = ((pageWidth - drawW) / 2f)
-            val top = ((pageHeight - drawH) / 2f)
+            val left = (pageWidth - drawW) / 2f
+            val top = (pageHeight - drawH) / 2f
             val scaled = Bitmap.createScaledBitmap(bmp, drawW, drawH, true)
             canvas.drawBitmap(scaled, left, top, null)
             pdf.finishPage(page)
@@ -159,7 +160,9 @@ class MainActivity : AppCompatActivity() {
     private fun decodeScaled(uri: Uri, maxSize: Int): Bitmap {
         val opts = BitmapFactory.Options()
         opts.inJustDecodeBounds = true
-        contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, opts) }
+        contentResolver.openInputStream(uri)?.use {
+            BitmapFactory.decodeStream(it, null, opts)
+        }
         var inSampleSize = 1
         val w = opts.outWidth
         val h = opts.outHeight
@@ -172,7 +175,9 @@ class MainActivity : AppCompatActivity() {
         }
         val opts2 = BitmapFactory.Options()
         opts2.inSampleSize = inSampleSize
-        return contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, opts2) }!!
+        return contentResolver.openInputStream(uri)?.use {
+            BitmapFactory.decodeStream(it, null, opts2)
+        }!!
     }
 
     private fun shareFile(file: File, mime: String) {
