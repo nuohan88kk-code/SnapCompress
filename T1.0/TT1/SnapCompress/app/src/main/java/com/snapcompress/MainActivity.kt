@@ -1,14 +1,22 @@
 package com.example.snapcompress
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.ImageView
-import android.graphics.BitmapFactory
-import android.graphics.Bitmap
+import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -17,43 +25,68 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var imageView: ImageView
+    private lateinit var statusView: TextView
     private lateinit var selectButton: Button
     private lateinit var compressButton: Button
+    private lateinit var multiToPdfButton: Button
     private var selectedUri: Uri? = null
 
-    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+    private val pickSingle = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
             selectedUri = uri
             imageView.setImageURI(uri)
+            statusView.text = "已选择单张图片"
             compressButton.isEnabled = true
+        }
+    }
+
+    private val pickMultiple = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
+        if (!uris.isNullOrEmpty()) {
+            val list = if (uris.size > 30) uris.subList(0, 30) else uris
+            lifecycleScope.launchWhenStarted {
+                statusView.text = "正在生成PDF"
+                val pdfFile = withContext(Dispatchers.IO) { createPdfFromImages(list) }
+                statusView.text = "PDF 已生成: ${pdfFile.absolutePath}"
+                startActivity(PdfResultActivity.intent(this@MainActivity, pdfFile.absolutePath))
+            }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.Theme_MaterialComponents_DayNight_NoActionBar)
         setContentView(R.layout.activity_main)
 
         imageView = findViewById(R.id.image)
+        statusView = findViewById(R.id.statusText)
         selectButton = findViewById(R.id.selectButton)
         compressButton = findViewById(R.id.compressButton)
-
+        multiToPdfButton = findViewById(R.id.multiToPdfButton)
         compressButton.isEnabled = false
 
-        selectButton.setOnClickListener {
-            pickImage.launch("image/*")
-        }
+        MobileAds.initialize(this)
+        val adRequest = AdRequest.Builder().build()
+        val adView: com.google.android.gms.ads.AdView = findViewById(R.id.adView)
+        adView.loadAd(adRequest)
+
+        selectButton.setOnClickListener { pickSingle.launch("image/*") }
 
         compressButton.setOnClickListener {
             val uri = selectedUri ?: return@setOnClickListener
-            val bitmap = contentResolver.openInputStream(uri)?.use { input ->
-                BitmapFactory.decodeStream(input)
-            } ?: return@setOnClickListener
-            val file = saveCompressed(bitmap)
-            imageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
+            lifecycleScope.launchWhenStarted {
+                statusView.text = "正在压缩"
+                val file = withContext(Dispatchers.IO) { compressAndSave(uri) }
+                statusView.text = "已保存: ${file.absolutePath}"
+                imageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
+                startActivity(ResultActivity.intent(this@MainActivity, file.absolutePath))
+            }
         }
+
+        multiToPdfButton.setOnClickListener { pickMultiple.launch("image/*") }
     }
 
-    private fun saveCompressed(bitmap: Bitmap): File {
+    private fun compressAndSave(uri: Uri): File {
+        val bitmap = decodeScaled(uri, 2048)
         val dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: filesDir
         val name = "IMG_" + SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date()) + ".jpg"
         val outFile = File(dir, name)
@@ -62,5 +95,52 @@ class MainActivity : AppCompatActivity() {
             out.flush()
         }
         return outFile
+    }
+
+    private fun createPdfFromImages(uris: List<Uri>): File {
+        val pdf = PdfDocument()
+        val pageWidth = 595
+        val pageHeight = 842
+        uris.forEachIndexed { index, uri ->
+            val bmp = decodeScaled(uri, 2000)
+            val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, index + 1).create()
+            val page = pdf.startPage(pageInfo)
+            val canvas: Canvas = page.canvas
+            val scale = minOf(pageWidth.toFloat() / bmp.width, pageHeight.toFloat() / bmp.height)
+            val drawW = (bmp.width * scale).toInt()
+            val drawH = (bmp.height * scale).toInt()
+            val left = ((pageWidth - drawW) / 2f)
+            val top = ((pageHeight - drawH) / 2f)
+            canvas.drawBitmap(Bitmap.createScaledBitmap(bmp, drawW, drawH, true), left, top, null)
+            pdf.finishPage(page)
+        }
+        val dir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) ?: filesDir
+        val name = "PDF_" + SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date()) + ".pdf"
+        val outFile = File(dir, name)
+        FileOutputStream(outFile).use { out ->
+            pdf.writeTo(out)
+            out.flush()
+        }
+        pdf.close()
+        return outFile
+    }
+
+    private fun decodeScaled(uri: Uri, maxSize: Int): Bitmap {
+        val opts = BitmapFactory.Options()
+        opts.inJustDecodeBounds = true
+        contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, opts) }
+        var inSampleSize = 1
+        val w = opts.outWidth
+        val h = opts.outHeight
+        if (w > maxSize || h > maxSize) {
+            val halfW = w / 2
+            val halfH = h / 2
+            while ((halfW / inSampleSize) >= maxSize || (halfH / inSampleSize) >= maxSize) {
+                inSampleSize *= 2
+            }
+        }
+        val opts2 = BitmapFactory.Options()
+        opts2.inSampleSize = inSampleSize
+        return contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, opts2) }!!
     }
 }
