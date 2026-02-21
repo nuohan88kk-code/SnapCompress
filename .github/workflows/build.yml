@@ -20,23 +20,23 @@ jobs:
         working-directory: T1.0/TT1/SnapCompress
 
     steps:
-      - name: 第1步 检出代码
+      - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 第2步 安装 JDK 17
+      - name: 安装 JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
           cache: gradle
 
-      - name: 第3步 安装 Android SDK
+      - name: 安装 Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: 第4步 赋予 gradlew 可执行权限
+      - name: gradlew 可执行
         run: chmod +x ./gradlew
 
-      - name: 第5步 写入 gradle.properties
+      - name: 写入 gradle.properties
         run: |
           cat > gradle.properties <<'PROP'
           org.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8
@@ -48,7 +48,7 @@ jobs:
           kotlin.daemon.jvmargs=-Xmx2g
           PROP
 
-      - name: 第6步 解码 Keystore 并校验
+      - name: 解码 Keystore 并校验
         shell: bash
         run: |
           set -euo pipefail
@@ -75,28 +75,29 @@ jobs:
             -alias "$SIGNING_KEY_ALIAS" \
             -keypass "$SIGNING_KEY_PASSWORD" | head -n 5
 
-      - name: 第7步 清理
-        if: ${{ success() }}
+      - name: 清理
         run: ./gradlew --no-daemon --stacktrace --info clean
 
-      - name: 第8步 构建 APK（Release 签名）
-        if: ${{ success() }}
+      - name: 签名报告
+        run: ./gradlew --no-daemon --stacktrace --info :app:signingReport
+
+      - name: 资源打包单步验证
+        run: ./gradlew --no-daemon --stacktrace --info :app:processReleaseResources
+
+      - name: 构建 APK（Release 签名）
         run: ./gradlew --no-daemon --stacktrace --info assembleRelease
 
-      - name: 第9步 构建 AAB（Release 签名）
-        if: ${{ success() }}
+      - name: 构建 AAB（Release 签名）
         run: ./gradlew --no-daemon --stacktrace --info bundleRelease
 
-      - name: 第10步 上传 APK
-        if: ${{ success() }}
+      - name: 上传 APK
         uses: actions/upload-artifact@v4
         with:
           name: app-apk
           path: T1.0/TT1/SnapCompress/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 
-      - name: 第11步 上传 AAB
-        if: ${{ success() }}
+      - name: 上传 AAB
         uses: actions/upload-artifact@v4
         with:
           name: app-aab
