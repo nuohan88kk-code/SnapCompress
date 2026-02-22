@@ -14,6 +14,7 @@ jobs:
       SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
       SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
       SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+      GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
 
     defaults:
       run:
@@ -36,13 +37,15 @@ jobs:
       - name: gradlew 可执行
         run: chmod +x ./gradlew
 
-      - name: 写入 gradle.properties
+      - name: 写入 gradle.properties（稳定构建）
         run: |
           cat > gradle.properties <<'PROP'
           org.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8
           org.gradle.daemon=false
           org.gradle.parallel=false
           org.gradle.workers.max=1
+          org.gradle.caching=false
+          org.gradle.configuration-cache=false
           android.useAndroidX=true
           android.enableJetifier=true
           kotlin.compiler.execution.strategy=in-process
@@ -92,15 +95,17 @@ jobs:
         run: ./gradlew --no-daemon --stacktrace --info bundleRelease
 
       - name: 上传 APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-apk
           path: T1.0/TT1/SnapCompress/app/build/outputs/apk/release/*.apk
-          if-no-files-found: error
+          if-no-files-found: ignore
 
       - name: 上传 AAB
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-aab
           path: T1.0/TT1/SnapCompress/app/build/outputs/bundle/release/*.aab
-          if-no-files-found: error
+          if-no-files-found: ignore
