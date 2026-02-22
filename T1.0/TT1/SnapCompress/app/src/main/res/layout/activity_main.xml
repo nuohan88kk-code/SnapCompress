@@ -42,7 +42,7 @@
             android:layout_height="48dp"
             android:text="选择图片"
             android:layout_marginTop="12dp"
-            android:backgroundTint="#F5D NB"
+            android:backgroundTint="#F5D77F"
             android:textColor="@android:color/black" />
 
         <Button
